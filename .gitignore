@@ -1,4 +1,23 @@
+# Python virtual environments
 venv/
+testvenv/
+ewaste-venv/
+
+# Environment variables
 .env
+
+# Python cache
 __pycache__/
 *.pyc
+
+# Python build/source files
+Python-*/
+*.tgz
+
+# IDE / editor files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

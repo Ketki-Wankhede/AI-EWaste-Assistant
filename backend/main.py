@@ -3,6 +3,8 @@ from PIL import Image
 import tensorflow as tf
 import numpy as np
 import io
+from backend.database.database import SessionLocal
+from backend.database.models import Prediction
 
 from backend.rules.disposal_rules import get_disposal_guidance
 
@@ -113,7 +115,20 @@ async def predict(file: UploadFile = File(...)):
     confidence = float(
         predictions[0][predicted_index]
     )
+    # Log prediction to database
+    # -----------------------------
 
+    db = SessionLocal()
+    try:
+        prediction_record = Prediction(
+            image_name=file.filename,
+            predicted_category=predicted_class,
+            confidence=confidence
+        )
+        db.add(prediction_record)
+        db.commit()
+    finally:
+        db.close()
 
     # -----------------------------
     # Confidence check
