@@ -2,11 +2,9 @@ import tensorflow as tf
 from tensorflow.keras import layers, models
 from tensorflow.keras.applications import MobileNetV3Small
 
-# Dataset paths
 TRAIN_DIR = "dataset_split/train"
 VAL_DIR = "dataset_split/validation"
 
-# Image settings
 IMG_SIZE = (224, 224)
 BATCH_SIZE = 16
 
@@ -26,36 +24,36 @@ validation_dataset = tf.keras.utils.image_dataset_from_directory(
     shuffle=False
 )
 
-# Store class names
+# Get class names automatically from folder names
 class_names = train_dataset.class_names
 
 print("Classes:", class_names)
+print("Number of classes:", len(class_names))
 
-# Improve data loading performance
 AUTOTUNE = tf.data.AUTOTUNE
 
 train_dataset = train_dataset.prefetch(buffer_size=AUTOTUNE)
 validation_dataset = validation_dataset.prefetch(buffer_size=AUTOTUNE)
 
-# Load MobileNetV3Small
+# MobileNetV3Small pretrained on ImageNet
 base_model = MobileNetV3Small(
     weights="imagenet",
     include_top=False,
     input_shape=(224, 224, 3)
 )
 
-# Freeze pretrained layers
 base_model.trainable = False
 
-# Build our classification model
+# Build model
 model = models.Sequential([
     base_model,
     layers.GlobalAveragePooling2D(),
     layers.Dropout(0.2),
-    layers.Dense(3, activation="softmax")
+
+    # Number of output neurons automatically matches number of classes
+    layers.Dense(len(class_names), activation="softmax")
 ])
 
-# Compile model
 model.compile(
     optimizer="adam",
     loss="sparse_categorical_crossentropy",
