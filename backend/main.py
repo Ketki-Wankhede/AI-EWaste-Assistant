@@ -97,8 +97,6 @@ async def predict(file: UploadFile = File(...)):
             axis=0
         )
 
-        # Normalize pixel values
-        image_array = image_array / 255.0
 
         # Make prediction
         predictions = model.predict(
